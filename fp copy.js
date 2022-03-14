@@ -42,7 +42,7 @@ let pcCount = 0
 // ______________________________________________
 
 // ______________loop through scanned items table__________
-let date = "3/08/2022"
+let date = currentDate()
 for (let i = 2; i < scans; i++) {
     let index = i
     let scanD = getScanDate(document.querySelector(`#manfiest-history-log > table > tbody > tr:nth-child(${index}) > td:nth-child(2)`).innerText)
