@@ -1,4 +1,4 @@
-let date = "3/10/2022"
+let date = currentDate()
 let dwnDate = downloadDate(date)
 let finalStorageString = localStorage.getItem("DownloadStr")
 let finalStopString = localStorage.getItem("StopStr")
@@ -29,3 +29,16 @@ function downloadDate(date){
     return arg2
     
 }
+function currentDate(){
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    getDate = String(new Date())
+    dateArr = getDate.split(" ")
+    let rawMonth = months.indexOf(dateArr[1])
+    let m = rawMonth + 1 
+    let d = dateArr[2]
+    let y = dateArr[3]
+    let date = `${m}/${d}/${y}`
+    return date
+  }
+
+  Autofill('')  

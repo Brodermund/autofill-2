@@ -65,7 +65,7 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         let newOrder = new Line(strArr[0],sku,cat,BinStr,strArr[7])
         LineArr.push(newOrder)
     }
-    let FinalArr = [`${date},${Carrier} | Pieces: ${pieces}, Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
+    let FinalArr = [`${date},${Carrier} | Pieces: ${pieces}`, `Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
     for (let i = 0; i < LineArr.length; i++) {
         const ele = LineArr[i];
         let pushStr = `${ele.Number},${ele.Sku},${ele.Category},${ele.Qty},${ele.Bin}`
