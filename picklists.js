@@ -6,86 +6,89 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
             this.Bin = Bin
             this.Category = Stop
             this.Qty = Qty
-    
         }
     }
     let pieces = 0 
-
     let Carrier 
-    if (window.confirm("FragilePak?")) {
-        Carrier = "FragilePak";
-    }
-    else{
-        Carrier = "Odyssey";
-    }  
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    
+    if (window.confirm("FragilePak?")) {Carrier = "FragilePak";}
+        else{Carrier = "Odyssey";}  
+    let FinalArr = getLines()
     let date = getDate()
-    let finalManifestNum = getManifestArr()
-
-    let listArr = document.getElementsByClassName("bigger-font")
-    let LineArr = []
-    
-    for (let i = 0; i < listArr.length; i++) {
-        let line = []
-        const ele = listArr[i];
-        let newEle = ele.innerHTML.replace(/ /gi, '');
-        let finalEle = String(newEle).replace(' style="font-weight: 700; text-align: center;"','')
-        console.log(finalEle)
-        let preStrArr = String(finalEle).split('</td>')
-        let strArr = []
-        for (let n = 0; n < preStrArr.length; n++) {
-            const element = preStrArr[n];
-            let interArr = String(element).split('td>')
-            strArr.push(interArr[1])
-        }
-        console.log(strArr)
-        let binArr = String(strArr[2]).split("<br>")
-        let finBinArr = []
-        for (let l = 0; l < binArr.length; l++) {
-            const element = binArr[l];
-            finBinArr.push(element)
-        }
-        let stopArr = String(strArr[4]).split("\n")
-        let finalStopArr = []
-        for (let l = 0; l < stopArr.length; l++) {
-            const element = stopArr[l];
-            let internalArr = String(element).split("<br>")
-            let stopPush = internalArr.join('')
-            console.log(stopPush)
-            finalStopArr.push(stopPush)            
-        }
-        let skuArr = strArr[1].split('(')
-        let sku = skuArr[0]
-        let catArr = skuArr[1].split(')')
-        let cat = catArr[0]
-        let BinStr = finBinArr.join(' ')
-        let stopStr = finalStopArr.join('&')
-        pieces = pieces + Number(strArr[7])
-        let newOrder = new Line(strArr[0],sku,cat,BinStr,strArr[7])
-        LineArr.push(newOrder)
-    }
-    let FinalArr = [`${date},${Carrier} | Pieces: ${pieces}`, `Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
-    for (let i = 0; i < LineArr.length; i++) {
-        const ele = LineArr[i];
-        let pushStr = `${ele.Number},${ele.Sku},${ele.Category},${ele.Qty},${ele.Bin}`
-        FinalArr.push(pushStr)
-    }
     let finalExport = FinalArr.join('\n')
-    let downloadDate = getDateDownload()
-    download(finalExport,`Picklist-${Carrier}-${downloadDate}.csv`,'.text/csv;charset=windows-1252')
+    stringStorage(finalExport,Carrier)
+    let downloadDate = date.replace("/",".")
+    if(Carrier === "Odyssey"){
+        let main = `${date}`
+        let str = localStorage.getItem("PicklistStr")
+        let finalstr = main.concat("\n",str)
+        download(finalstr,`Picklist-${downloadDate}.csv`,'.text/csv;charset=windows-1252')
+        localStorage.removeItem("PicklistStr")
+    }
     // FUNCTIONS ________________
+    function stringStorage(str,carrier){
+        if(localStorage.getItem("PicklistStr") === null){
+            localStorage.setItem("PicklistStr",str)
+        }
+        else if (carrier === "FragilePak"){
+            let previousStr = localStorage.getItem("PicklistStr")
+            console.log(previousStr)
+            let finalstr = previousStr.concat("\n",str)
+            localStorage.setItem("PicklistStr",finalstr)
+        }
+        else if (carrier === "Odyssey"){
+            let previousStr = localStorage.getItem("PicklistStr") + "\n" + "\n"
+            console.log(previousStr)
+            let finalstr = previousStr.concat("\n",str)
+            localStorage.setItem("PicklistStr",finalstr)
+        }
+        console.log("stringStorage Complete")
+    } 
+    function getLines(){
+        let finalManifestNum = getManifestArr()
+        let loopLength = document.querySelector("body > table > tbody").rows.length - 1
+        console.log(loopLength)
+        let arr = []
+        for (let i = 0; i < loopLength; i++) {
+        let index = i + 2
+        let num = document.querySelector(`body > table > tbody > tr:nth-child(${index}) > td:nth-child(1)`).innerHTML
+        let skuArr = skuSplit(index)
+        let bin = document.querySelector(`body > table > tbody > tr:nth-child(${index}) > td:nth-child(3)`).innerHTML
+        let qty = document.querySelector(`body > table > tbody > tr:nth-child(${index}) > td:nth-child(8)`).innerHTML
+        pieces = pieces + Number(qty)
+        let newOrder = new Line(num,skuArr[0],skuArr[1],bin,qty)
+        console.log(newOrder)
+        arr.push(newOrder)
+        }
+        let FinalArr = [`${Carrier} | Pieces: ${pieces}`, `Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
+        for (let i = 0; i < arr.length; i++) {
+            const ele = arr[i];
+            let pushStr = `${ele.Number},${ele.Sku},${ele.Category},${ele.Qty},${ele.Bin}`
+            FinalArr.push(pushStr)
+        }
+        console.log("getLines Complete")
+        return FinalArr
+    }
     function getManifestArr(){
         let rawManifestNum = document.querySelector("body > b").innerText
-        let manifestArr = String(rawManifestNum).split(':')
-        console.log(manifestArr)
+        let manifestArr = String(rawManifestNum).split(':')  
         let interManifestNum = String(manifestArr[1]).replace(" [",'')
         let interManifestNum2 = String(interManifestNum).replace(/,/g,' | ')
         let finalManifestNum = String(interManifestNum2).replace("]",'')
+        console.log("getManifestArr Complete")
         return finalManifestNum
     }
-    
+    function skuSplit(index){
+        let skuArr = []
+        let str = document.querySelector(`body > table > tbody > tr:nth-child(${index}) > td:nth-child(2)`).innerHTML
+        let arr1 = str.split("(")
+        skuArr.push(arr1[0])
+        let arr2 = String(arr1[1]).split(")")
+        skuArr.push(arr2[0])
+        console.log("skuSplit Complete")
+        return skuArr
+    }
     function getDateDownload(){
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         let getDate = String(new Date())
         dateArr = getDate.split(" ")
         let rawMonth = months.indexOf(dateArr[1])
@@ -94,8 +97,8 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         let date = `${m}.${d}`
         return date
     }
-    
     function getDate(){
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         let getDate = String(new Date())
         dateArr = getDate.split(" ")
         let rawMonth = months.indexOf(dateArr[1])
@@ -121,8 +124,5 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
             }, 0); 
         }
     }
-    console.log(LineArr)
-    }
-    else{console.log("ERROR")}
-
+}
 Autofill('')

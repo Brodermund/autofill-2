@@ -12,7 +12,7 @@ WshShell.SendKeys "{ENTER}"
 WScript.Sleep(5000)
 WshShell.SendKeys "{ENTER}"
 WScript.Sleep(2000)
-names = Array("USPSScript","UPSScript","FedexScript","WarehouseScript","OdysseyScript","FragilePakScript")
+names = Array("ground_usps_goedekers","ground_ups_goedekers","ground_fedex_goedekers","warehousepickup_goedekers_no_print","odyssey_goedekers_no_print","fragilepak_goedekers_no_print")
  For each item in names
     WScript.Sleep(1000)
     runScript(item)
@@ -21,7 +21,7 @@ names = Array("USPSScript","UPSScript","FedexScript","WarehouseScript","OdysseyS
 
  Wscript.Quit
 Sub runScript(scriptName)
-    WshShell.CurrentDirectory = "C:\Bobby\Desktop\One Drive\Eshopper Scripts"
+    WshShell.CurrentDirectory = "C:\Users\BobbyRodermu_\OneDrive - Eshopper Pro Mail\Desktop\auto_close_print_goedekers"
     WshShell.Run scriptName
     WScript.Sleep(1000)
     WshShell.AppActivate scriptName
