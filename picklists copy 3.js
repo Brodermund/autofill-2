@@ -8,40 +8,8 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         }
     }
     let pieces = 0 
-    let Carrier 
-    if (window.confirm("FragilePak?")) {Carrier = "FragilePak";}
-        else{Carrier = "Odyssey";}  
-    let FinalArr = getLines()
-    let date = getDate()
-    let finalExport = FinalArr.join('\n')
-    stringStorage(finalExport,Carrier)
-    let downloadDate = date.replace("/",".")
-    if(Carrier === "Odyssey"){
-        let main = `${date}`
-        let str = localStorage.getItem("PicklistStr")
-        let finalstr = main.concat("\n",str)
-        download(finalstr,`Picklist-${downloadDate}.csv`,'.text/csv;charset=windows-1252')
-        localStorage.removeItem("PicklistStr")
-    }
-    // FUNCTIONS ________________
-    function stringStorage(str,carrier){
-        if(localStorage.getItem("PicklistStr") === null){
-            localStorage.setItem("PicklistStr",str)
-        }
-        else if (carrier === "FragilePak"){
-            let previousStr = localStorage.getItem("PicklistStr")
-            console.log(previousStr)
-            let finalstr = previousStr.concat("\n",str)
-            localStorage.setItem("PicklistStr",finalstr)
-        }
-        else if (carrier === "Odyssey"){
-            let previousStr = localStorage.getItem("PicklistStr") + "\n" + "\n"
-            console.log(previousStr)
-            let finalstr = previousStr.concat("\n",str)
-            localStorage.setItem("PicklistStr",finalstr)
-        }
-        console.log("stringStorage Complete")
-    } 
+    let pieceCount = getLines()
+    window.alert(`Pieces : ${pieceCount}`)
     function getLines(){
         let finalManifestNum = getManifestArr()
         let loopLength = document.querySelector("body > table > tbody").rows.length - 1
@@ -59,7 +27,7 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         }
         let sortedArr = arr.sort(dynamicSort("Bin"))
         console.log(sortedArr)
-        let FinalArr = [`${Carrier} | Pieces: ${pieces}`, `Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
+        let FinalArr = [`Odyssey | Pieces: ${pieces}`, `Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
         let number = 1
         for (let i = 0; i < arr.length; i++) {
             const ele = arr[i];
@@ -67,7 +35,7 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
             FinalArr.push(pushStr)
         }
         console.log("getLines Complete")
-        return FinalArr
+        return pieces
     }
     function getBinStr(index){
         let finalArr = []
@@ -105,50 +73,12 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         console.log("skuSplit Complete")
         return skuArr
     }
-    function getDateDownload(){
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        let getDate = String(new Date())
-        dateArr = getDate.split(" ")
-        let rawMonth = months.indexOf(dateArr[1])
-        let m = rawMonth + 1 
-        let d = dateArr[2]
-        let date = `${m}.${d}`
-        return date
-    }
-    function getDate(){
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        let getDate = String(new Date())
-        dateArr = getDate.split(" ")
-        let rawMonth = months.indexOf(dateArr[1])
-        let m = rawMonth + 1 
-        let d = dateArr[2]
-        let date = `${m}/${d}`
-        return date
-    }
     function charIsLetter(char) {
         if (typeof char !== 'string') {
           return false;
         }
-      
         return char.toLowerCase() !== char.toUpperCase();
       }
-    function download(data, filename, type) {
-        let file = new Blob([data], {type: type});
-        if (window.navigator.msSaveOrOpenBlob) // IE10+
-            window.navigator.msSaveOrOpenBlob(file, filename);
-        else { // Others
-            var a = document.createElement("a"),
-                    url = URL.createObjectURL(file);
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(function() {
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);  
-            }, 0); 
-        }
-    }
     function dynamicSort(property) {
         var sortOrder = 1;
         if(property[0] === "-") {
@@ -164,4 +94,3 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         }
     }
 }
-Autofill('')

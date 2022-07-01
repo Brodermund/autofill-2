@@ -1,12 +1,9 @@
-let date = currentDate()
-let dwnDate = downloadDate(date)
-let finalStorageString = localStorage.getItem("DownloadStr")
-let finalLoadString = localStorage.getItem("LoadStr")
-let finalPickString = localStorage.getItem("PickStr")
-console.log(`Test ${finalStorageString}`)
-download(finalLoadString, `FP-${dwnDate}-Load.csv`,"csv")
-download(finalPickString, `FP-${dwnDate}-Pick.csv`,"csv")
-download(finalStorageString, `FP-${dwnDate}.csv`,"csv")
+let dwnDate = downloadDate()
+let fragileStr = localStorage.getItem("FP Picklist")
+let OdysseyStr =  "\n" + localStorage.getItem("Odyssey Picklist")
+let finalstr = fragileStr.concat("\n",OdysseyStr)
+console.log(finalstr)
+download(finalstr,`Picklist-${dwnDate}.csv`,'.text/csv;charset=windows-1252')
 function download(data, filename, type) {
     let file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+
@@ -24,7 +21,8 @@ function download(data, filename, type) {
         }, 0); 
     }
 }
-function downloadDate(date){
+function downloadDate(){
+    date = currentDate()
     let arg1 = date.split("/")
     let arg2 = `${arg1[0]}.${arg1[1]}`
 

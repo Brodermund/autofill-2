@@ -9,36 +9,18 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
     }
     let pieces = 0 
     let Carrier 
-    if (window.confirm("FragilePak?")) {Carrier = "FragilePak";}
-        else{Carrier = "Odyssey";}  
     let FinalArr = getLines()
     let date = getDate()
     let finalExport = FinalArr.join('\n')
     stringStorage(finalExport,Carrier)
-    let downloadDate = date.replace("/",".")
-    if(Carrier === "Odyssey"){
-        let main = `${date}`
-        let str = localStorage.getItem("PicklistStr")
-        let finalstr = main.concat("\n",str)
-        download(finalstr,`Picklist-${downloadDate}.csv`,'.text/csv;charset=windows-1252')
-        localStorage.removeItem("PicklistStr")
-    }
     // FUNCTIONS ________________
     function stringStorage(str,carrier){
-        if(localStorage.getItem("PicklistStr") === null){
-            localStorage.setItem("PicklistStr",str)
+        if(localStorage.getItem("FP Picklist") === null){
+            localStorage.setItem("FP Picklist",str)
         }
-        else if (carrier === "FragilePak"){
-            let previousStr = localStorage.getItem("PicklistStr")
-            console.log(previousStr)
-            let finalstr = previousStr.concat("\n",str)
-            localStorage.setItem("PicklistStr",finalstr)
-        }
-        else if (carrier === "Odyssey"){
-            let previousStr = localStorage.getItem("PicklistStr") + "\n" + "\n"
-            console.log(previousStr)
-            let finalstr = previousStr.concat("\n",str)
-            localStorage.setItem("PicklistStr",finalstr)
+        else {
+            localStorage.removeItem("FP Picklist")
+            localStorage.setItem("FP Picklist",str)
         }
         console.log("stringStorage Complete")
     } 
@@ -59,7 +41,7 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         }
         let sortedArr = arr.sort(dynamicSort("Bin"))
         console.log(sortedArr)
-        let FinalArr = [`${Carrier} | Pieces: ${pieces}`, `Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
+        let FinalArr = [`FragilePak | Pieces: ${pieces}`, `Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
         let number = 1
         for (let i = 0; i < arr.length; i++) {
             const ele = arr[i];

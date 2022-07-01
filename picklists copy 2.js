@@ -9,8 +9,6 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
     }
     let pieces = 0 
     let Carrier 
-    if (window.confirm("FragilePak?")) {Carrier = "FragilePak";}
-        else{Carrier = "Odyssey";}  
     let FinalArr = getLines()
     let date = getDate()
     let finalExport = FinalArr.join('\n')
@@ -28,12 +26,7 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         if(localStorage.getItem("PicklistStr") === null){
             localStorage.setItem("PicklistStr",str)
         }
-        else if (carrier === "FragilePak"){
-            let previousStr = localStorage.getItem("PicklistStr")
-            console.log(previousStr)
-            let finalstr = previousStr.concat("\n",str)
-            localStorage.setItem("PicklistStr",finalstr)
-        }
+        
         else if (carrier === "Odyssey"){
             let previousStr = localStorage.getItem("PicklistStr") + "\n" + "\n"
             console.log(previousStr)

@@ -1,6 +1,7 @@
 if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child(1)").innerText === "Line"){
     class Line{
-        constructor(Sku,Stop,Bin,Qty){
+        constructor(Number,Sku,Stop,Bin,Qty){
+            this.Number = Number
             this.Sku = Sku
             this.Bin = Bin
             this.Category = Stop
@@ -49,42 +50,24 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         let arr = []
         for (let i = 0; i < loopLength; i++) {
         let index = i + 2
+        let num = document.querySelector(`body > table > tbody > tr:nth-child(${index}) > td:nth-child(1)`).innerHTML
         let skuArr = skuSplit(index)
         let sku = String(skuArr[0]).replace("Signature Design by Ashley","Signature Design")
-        let bin = getBinStr(index)
+        let bin = document.querySelector(`body > table > tbody > tr:nth-child(${index}) > td:nth-child(3)`).innerHTML
         let qty = document.querySelector(`body > table > tbody > tr:nth-child(${index}) > td:nth-child(8)`).innerHTML
         pieces = pieces + Number(qty)
-        let newOrder = new Line(sku,skuArr[1],bin,qty)
+        let newOrder = new Line(num,sku,skuArr[1],bin,qty)
+        console.log(newOrder)
         arr.push(newOrder)
         }
-        let sortedArr = arr.sort(dynamicSort("Bin"))
-        console.log(sortedArr)
         let FinalArr = [`${Carrier} | Pieces: ${pieces}`, `Manifests: ${finalManifestNum},,`,"Item,Sku,Category,QTY,Bin"]
-        let number = 1
         for (let i = 0; i < arr.length; i++) {
             const ele = arr[i];
-            let pushStr = `${number++},${ele.Sku},${ele.Category},${ele.Qty},${ele.Bin}`
+            let pushStr = `${ele.Number},${ele.Sku},${ele.Category},${ele.Qty},${ele.Bin}`
             FinalArr.push(pushStr)
         }
         console.log("getLines Complete")
         return FinalArr
-    }
-    function getBinStr(index){
-        let finalArr = []
-        let interbin = document.querySelector(`body > table > tbody > tr:nth-child(${index}) > td:nth-child(3)`).innerHTML
-        let midbin = interbin.replace(/<br>/gi,"|")
-        let binArr = midbin.split("|")
-        for(let i = 0; i < binArr.length;i++){
-            if(charIsLetter(binArr[i][1])){
-                finalArr.push(binArr[i])
-            }
-            else{
-                let newBin = binArr[i].replace(/0101/gi,"")
-                finalArr.push(newBin)
-            }
-        }
-        let finalStr = finalArr.join(" | ")
-        return finalStr
     }
     function getManifestArr(){
         let rawManifestNum = document.querySelector("body > b").innerText
@@ -125,13 +108,6 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
         let date = `${m}/${d}`
         return date
     }
-    function charIsLetter(char) {
-        if (typeof char !== 'string') {
-          return false;
-        }
-      
-        return char.toLowerCase() !== char.toUpperCase();
-      }
     function download(data, filename, type) {
         let file = new Blob([data], {type: type});
         if (window.navigator.msSaveOrOpenBlob) // IE10+
@@ -147,20 +123,6 @@ if(document.querySelector("body > table > tbody > tr:nth-child(1) > td:nth-child
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);  
             }, 0); 
-        }
-    }
-    function dynamicSort(property) {
-        var sortOrder = 1;
-        if(property[0] === "-") {
-            sortOrder = -1;
-            property = property.substr(1);
-        }
-        return function (a,b) {
-            /* next line works with strings and numbers, 
-             * and you may want to customize it to your needs
-             */
-            var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
-            return result * sortOrder;
         }
     }
 }
